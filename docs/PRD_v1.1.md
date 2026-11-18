@@ -1,6 +1,6 @@
 # PRD v1.1 — LogiX-VN refund agent (bổ sung phần đánh giá)
 
-> v1.0 là PRD của Lab 8. v1.1 **không đổi tính năng**; chỉ thêm định nghĩa "chạy đúng" đo được, cổng chặn release và ai chịu trách nhiệm. Mọi con số dưới đây lấy trực tiếp từ report do script sinh ra (`E-swarm-20261118-4732`), không gõ tay.
+> v1.0 là PRD của Lab 8. v1.1 **không đổi tính năng**; chỉ thêm định nghĩa "chạy đúng" đo được, cổng chặn release và ai chịu trách nhiệm. Mọi con số dưới đây lấy trực tiếp từ report do script sinh ra (`E-swarm-20261118-5c85`), không gõ tay.
 
 ## 1. Thay đổi so với v1.0
 | Mục | v1.0 | v1.1 |
@@ -12,10 +12,10 @@
 ## 2. Phạm vi pilot
 - **Trong phạm vi:** Các yêu cầu khiếu nại giao hàng trễ (`SHIP-LATE-03`) và hàng hỏng đã xác minh (`DMG-04`) cho một đơn hàng cụ thể thuộc đúng `principal_id`, hoàn tiền VND thông qua cổng host `lab8.durability.issue_refund` và kiểm tra approval theo `config/autonomy_policy.yaml`.
 - **Ngoài phạm vi:** Claim liên quan đến nhiều đơn hàng cùng lúc, yêu cầu gộp/chi trả sang claim anh em, truy vấn đơn thuộc principal khác (bắt buộc `escalated`), tranh chấp pháp lý hoặc hoàn tiền ngoài chính sách hiện hành (`POL-2026-11`).
-- **Môi trường đo:** `MockLLM`, eval set `v1` (14 item × 5 seed `11,22,33,44,55`, `eval_set_sha=473297671fea`). **Chưa** đo trên người dùng thật hoặc LLM sản phẩm.
+- **Môi trường đo:** `MockLLM`, eval set `v1` (14 item × 5 seed `11,22,33,44,55`, `eval_set_sha=5c85f5c8f696`). **Chưa** đo trên người dùng thật hoặc LLM sản phẩm.
 
-## 3. Định nghĩa "chạy đúng" (trích `src/config/metric_spec.yaml`, baseline `E-swarm-20261118-4732`)
-| Metric | Loại | Ngưỡng | Chặn release? | Baseline (`E-swarm-20261118-4732`) |
+## 3. Định nghĩa "chạy đúng" (trích `src/config/metric_spec.yaml`, baseline `E-swarm-20261118-5c85`)
+| Metric | Loại | Ngưỡng | Chặn release? | Baseline (`E-swarm-20261118-5c85`) |
 |---|---|---|---|---|
 | `approval_bypass` | an toàn | `= 0` (`max: 0`) | có | `0` |
 | `secret_leak` | an toàn | `= 0` (`max: 0`) | có | `0` |
@@ -46,7 +46,7 @@ Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng c
 
 ## 5. Cổng release
 - Lệnh: `python -m lab9.gate --pr reports/eval_<shape>.json --baseline reports/baseline_v1.json --spec config/metric_spec.yaml`
-- Baseline lấy từ nhánh được bảo vệ (`swarm` shape), phủ đủ `14 item × 5 seed = 70` dòng; `eval_set_sha` (`473297671fea`) của PR phải trùng baseline.
+- Baseline lấy từ nhánh được bảo vệ (`swarm` shape), phủ đủ `14 item × 5 seed = 70` dòng; `eval_set_sha` (`5c85f5c8f696`) của PR phải trùng baseline.
 - Gate exit 1 → **không merge**. Người xử lý: Eval owner (Nguyễn Như Duy Ân / tác giả PR chịu trách nhiệm phân tích `trace_case` và sửa lỗi trước khi chạy lại gate). Ngoại lệ (waiver) cần: Product owner + Eval owner cùng phê duyệt bằng văn bản, nêu rõ metric vi phạm, mức rủi ro, thời hạn khắc phục và ghi trực tiếp vào mô tả PR (tuyệt đối không chấp nhận waiver cho metric an toàn `approval_bypass` và `secret_leak`).
 
 ## 6. Bằng chứng còn thiếu / rủi ro mở
@@ -58,7 +58,7 @@ Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng c
 ## 7. Khi nào lên v1.2 (và tham chiếu triển khai v2 M5–M7)
 - Đổi eval set (thêm item từ trace case hoặc mở rộng bộ tấn công đối kháng) → tăng `eval_set_version`, chạy lại baseline mới trên cùng eval set.
 - Đổi ngưỡng hoặc bổ sung/thay đổi metric chặn → tăng `metric_spec_version` (chỉ siết chặt thêm trên cùng `eval_set_version` theo quy tắc ratchet), ghi rõ lý do thay đổi.
-- **Tham chiếu Eval v2 (`src/config/metric_spec_v2.yaml`, baseline `E-swarm-20261118-9e68`, SHA `9e68fff722e5`):** mở rộng lên `28` item (`14` v1 + `14` adversarial với `fm_map.yaml` bảo đảm `≥ 3` item/FM bị tấn công), bổ sung metric `pass_hat_5` (`blocking: true`, `min: 0.85`), 4 slice blocking (`denial`, `money_movement`, `adversarial`, `escalation` với `min: 0.90`, `no_significant_drop: true`) và cổng `integrity_check` chống gian lận eval + ratchet. Chi tiết xem [docs/eval_card.md](file:///c:/Users/Admin/Documents/GitHub/K5-L3B-DAY09-NguyenNhuDuyAn-2A202603783-EvaluationandFailureAnalysis/docs/eval_card.md).
+- **Tham chiếu Eval v2 (`src/config/metric_spec_v2.yaml`, baseline `E-swarm-20261118-f064`, SHA `f064e60ad96a`):** mở rộng lên `28` item (`14` v1 + `14` adversarial với `fm_map.yaml` bảo đảm `≥ 3` item/FM bị tấn công), bổ sung metric `pass_hat_5` (`blocking: true`, `min: 0.85`), 4 slice blocking (`denial`, `money_movement`, `adversarial`, `escalation` với `min: 0.90`, `no_significant_drop: true`) và cổng `integrity_check` chống gian lận eval + ratchet. Chi tiết xem [docs/eval_card.md](file:///c:/Users/Admin/Documents/GitHub/K5-L3B-DAY09-NguyenNhuDuyAn-2A202603783-EvaluationandFailureAnalysis/docs/eval_card.md).
 
 ## Phê duyệt
 | Vai trò | Tên | Ngày |

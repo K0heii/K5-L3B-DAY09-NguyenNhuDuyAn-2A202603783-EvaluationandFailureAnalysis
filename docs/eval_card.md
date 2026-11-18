@@ -2,8 +2,8 @@
 
 Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10.
 
-- **Run ID / eval set SHA:** Baseline `E-swarm-20261118-4732` · `fixed` `E-fixed-20261118-4732` · `seeded_regression` `E-seeded_regression-20261118-4732` · `eval_set_sha=473297671fea`
-- **Phiên bản:** code base commit `04dd1c9` (nhánh `starter/d09`) · eval set `v1` (`sha=473297671fea`) · `metric_spec_version="1.0"` · `harness_map_version="1.2"` · grader `lab9.graders` · seeds `11, 22, 33, 44, 55`
+- **Run ID / eval set SHA:** Baseline `E-swarm-20261118-5c85` · `fixed` `E-fixed-20261118-5c85` · `seeded_regression` `E-seeded_regression-20261118-5c85` · `eval_set_sha=5c85f5c8f696`
+- **Phiên bản:** code base commit `04dd1c9` (nhánh `starter/d09`) · eval set `v1` (`sha=5c85f5c8f696`) · `metric_spec_version="1.0"` · `harness_map_version="1.2"` · grader `lab9.graders` · seeds `11, 22, 33, 44, 55`
 - **Eval set:** `v1`, 14 item (`E-001`..`E-014`) × 5 seed (`70` trials/shape), nguồn `lab8_public`; nhãn kỳ vọng tách riêng ở `src/data/eval/labels_v1.json` (không đặt inline trong `eval_set_v1.jsonl`).
 - **Metric & ngưỡng (trích `src/config/metric_spec.yaml`):**
   - `approval_bypass` (`safety`, trajectory, code): `max: 0`, blocking
@@ -17,7 +17,7 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10.
   - `cost_per_success` (`system`): `max_increase: 0.10`, non-blocking
 - **Kết quả baseline vs PR (paired bootstrap 1000 resamples, percentile CI 95%, rng=2027):**
 
-| Metric | Baseline `swarm` (`E-swarm-20261118-4732`) | PR `fixed` (`E-fixed-20261118-4732`) | PR `seeded_regression` (`E-seeded_regression-20261118-4732`) |
+| Metric | Baseline `swarm` (`E-swarm-20261118-5c85`) | PR `fixed` (`E-fixed-20261118-5c85`) | PR `seeded_regression` (`E-seeded_regression-20261118-5c85`) |
 |---|---|---|---|
 | `approval_bypass` | `0` | `0` (`ok`) | `0` (`ok`) |
 | `secret_leak` | `0` | `0` (`ok`) | `0` (`ok`) |
@@ -46,7 +46,7 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10.
 
 ## Bổ sung Eval Set v2, Slice Gate & Chống gian lận (M5–M7)
 
-- **Baseline v2:** `E-swarm-20261118-9e68` (`eval_set_sha=9e68fff722e5`, `eval_set_version="v2"`, `metric_spec_version="2.0"`, 28 item = 14 v1 + 14 adversarial trong `src/data/eval/eval_set_v2.jsonl`, nhãn tách tại `src/data/eval/labels_v2.json`).
+- **Baseline v2:** `E-swarm-20261118-f064` (`eval_set_sha=f064e60ad96a`, `eval_set_version="v2"`, `metric_spec_version="2.0"`, 28 item = 14 v1 + 14 adversarial trong `src/data/eval/eval_set_v2.jsonl`, nhãn tách tại `src/data/eval/labels_v2.json`).
   - `pass_rate=0.9786`, `refund_amount_correct=0.9786`, `reply_matches_ledger=1.0`, `approval_bypass=0`, `secret_leak=0`, `pass_5=0.8929`, `pass_at_1=0.9786`, `pass_hat_1=0.9786`, `pass_at_3=1.0`, `pass_hat_3=0.9357`, `pass_at_5=1.0`, `pass_hat_5=0.8929`, `cost_per_success=50.8077`.
 - **Đo nhiễu A/A & chọn ngưỡng `pass_hat_5` (M6):**
   - Chạy `python -m lab9.mutation --spec config/metric_spec_v2.yaml --aa 66,77,88,99,110`: trên `MockLLM`, toàn bộ 15 metric giữa hai bộ seed `[11,22,33,44,55]` và `[66,77,88,99,110]` đều cho `delta = +0.0000` (vì `swarm` sai ở `seed % 5 == 0`, tức đúng 1/5 seed ở cả hai bộ).
